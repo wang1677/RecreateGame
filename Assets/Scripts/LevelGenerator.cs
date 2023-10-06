@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    public GameObject[] prefabs; // Assign your prefabs in the inspector
+    public GameObject[] prefabs; // Assign  prefabs in the inspector
     private int[,] levelMap = { 
 {1,2,2,2,2,2,2,2,2,2,2,2,2,7},
 {2,5,5,5,5,5,5,5,5,5,5,5,5,4},
@@ -34,9 +34,9 @@ public class LevelGenerator : MonoBehaviour
             for (int j = 0; j < levelMap.GetLength(1); j++)
             {
                 int pieceType = levelMap[i, j];
-                if (pieceType != 0) // 0 means empty space, so we skip it
+                if (pieceType != 0) // 0 means empty space
                 {
-                    Instantiate(prefabs[pieceType - 1], new Vector3(j, -i, 0), Quaternion.identity, transform);
+                    Instantiate(prefabs[pieceType], new Vector3(j, -i, 0), Quaternion.identity, transform);
                 }
             }
         }
