@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("MoveY", moveY);
         }
 
-        // Example death condition: (Replace with your actual condition)
+        // Example death condition: (Replace with condition)
         /*if ( PacStudent should die condition )
         {
             HandleDeath();
@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        // Respawn logic here (e.g., move player, reset level, etc.)
+        // Respawn logic here (move player, reset level, etc.)
 
         // Reset death state
         isDead = false;
