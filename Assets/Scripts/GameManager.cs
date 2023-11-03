@@ -5,83 +5,132 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public Ghost[] ghosts;
-    public PacStudent pacStudent;
+    public PacStudentController pacStudent;
     public Transform pellets;
-    public int score { get; private set; }
-    public int lives { get; private set;}
+
+    private const int DefaultLives = 3;
+    private const float ResetDelay = 2.5f;
+
+    public int Score { get; private set; }
+    public int Lives { get; private set; }
 
     private void Start()
     {
-        NewGame();
+        StartNewGame();
     }
+
     private void Update()
     {
-        if (this.lives <= 0 && Input.anyKeyDown)
+        if (IsGameOver() && Input.anyKeyDown)
         {
-            NewGame();
+            StartNewGame();
         }
     }
-    private void NewGame()
+
+    private bool IsGameOver()
+    {
+        return Lives <= 0;
+    }
+
+    private void StartNewGame()
+    {
+        InitializeScore();
+        InitializeLives();
+        StartNewRound();
+    }
+
+    private void StartNewRound()
+    {
+        ActivateAllPellets();
+        ResetGameObjects();
+    }
+
+    private void ResetGameObjects()
+    {
+        foreach (Ghost ghost in ghosts)
+        {
+            ActivateGameObject(ghost.gameObject);
+        }
+
+        ActivateGameObject(pacStudent.gameObject);
+    }
+
+    private void ActivateAllPellets()
+    {
+        foreach (Transform pellet in pellets)
+        {
+            ActivateGameObject(pellet.gameObject);
+        }
+    }
+
+    private void ActivateGameObject(GameObject obj)
+    {
+        obj.SetActive(true);
+    }
+
+    private void DeactivateGameObject(GameObject obj)
+    {
+        obj.SetActive(false);
+    }
+
+    private void EndGame()
+    {
+        foreach (Ghost ghost in ghosts)
+        {
+            DeactivateGameObject(ghost.gameObject);
+        }
+
+        DeactivateGameObject(pacStudent.gameObject);
+    }
+
+    private void InitializeScore()
     {
         SetScore(0);
-        SetLives(3);
-        NewRound();
-    }
-    private void NewRound()
-    {
-        foreach(Transform pellet in this.pellets)
-        {
-            pellet.gameObject.SetActive(true);
-        }
-
-        ResetState();
     }
 
-    private void ResetState()
+    private void InitializeLives()
     {
-        for (int i = 0; i < this.ghosts.Length; i++)
-        {
-            this.ghosts[i].gameObject.SetActive(true);
-        }
-        this.pacStudent.gameObject.SetActive(true);
+        SetLives(DefaultLives);
     }
 
-    private void GameOver()
-    {
-        for (int i = 0; i < this.ghosts.Length; i++)
-        {
-            this.ghosts[i].gameObject.SetActive(false);
-        }
-        this.pacStudent.gameObject.SetActive(false);
-    }
     private void SetScore(int score)
     {
-        this.score = score;
+        Score = score;
     }
+
     private void SetLives(int lives)
     {
-        this.lives = lives;
+        Lives = lives;
     }
 
-    public void GhostEat(Ghost ghost)
+    public void OnGhostEaten(Ghost ghost)
     {
-        SetScore(this.score + ghost.points);
+        AddScore(ghost.points);
     }
 
-    public void PacStudentEast()
+    public void OnPacStudentEaten()
     {
-        this.pacStudent.gameObject.SetActive(false);
-       
-        SetLives(this.lives - 1);
-        
-        if (this.lives > 0)
+        DeactivateGameObject(pacStudent.gameObject);
+
+        DecreaseLives();
+
+        if (Lives > 0)
         {
-            Invoke(nameof(ResetState), 2.5f);
+            Invoke(nameof(ResetGameObjects), ResetDelay);
         }
         else
         {
-            GameOver();
+            EndGame();
         }
     }
-}
 
+    private void AddScore(int points)
+    {
+        Score += points;
+    }
+
+    private void DecreaseLives()
+    {
+        SetLives(Lives - 1);
+    }
+}
